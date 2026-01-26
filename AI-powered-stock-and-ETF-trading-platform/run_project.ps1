@@ -39,6 +39,6 @@ Write-Host "   - Signals API:    Port 8000"
 Write-Host "   - Alerts API:     Port 8001"
 Write-Host "   - Backtesting API: Port 8002"
 
-$env:PYTHONPATH = "C:/infosys1/AI-powered-stock-and-ETF-trading-platform;$env:PYTHONPATH"
+$env:PYTHONPATH = "C:\Users\KEERTHANA\Infosys-MachineLearning\AI-powered-stock-and-ETF-trading-platform;$env:PYTHONPATH"
 Write-Host "Starting Dashboard..."
-& C:/infosys1/AI-powered-stock-and-ETF-trading-platform/venv/Scripts/python.exe -m streamlit run "C:\infosys1\AI-powered-stock-and-ETF-trading-platform\0_Overview.py"
+& python -m streamlit run "C:\Users\KEERTHANA\Infosys-MachineLearning\AI-powered-stock-and-ETF-trading-platform\0_Overview.py"

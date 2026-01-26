@@ -7,6 +7,8 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+.zencoder/
+.zenflow/
 
 # Virtual Environment
 .venv/
