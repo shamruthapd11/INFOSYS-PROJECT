@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- AI NEW
 import sys
 from pathlib import Path
 # Add the project root to the Python path
@@ -11,6 +11,20 @@ from pathlib import Path
 from typing import Optional, List, Protocol
 from dataclasses import dataclass, field
 import datetime
+import requests
+
+@st.cache_data(ttl=6 * 60 * 60)  # cache for 6 hours
+def get_usd_to_inr_rate():
+    try:
+        resp = requests.get(
+            "https://open.er-api.com/v6/latest/USD",
+            timeout=1.5
+        )
+        data = resp.json()
+        return float(data["rates"]["INR"])
+    except Exception:
+        return 83.0  # instant fallback
+
 
 # --- Configuration & Path Setup ---
 project_root = Path(__file__).parent.parent
@@ -449,6 +463,8 @@ def inject_glassmorphism_css():
 
 
 def render_market_pulse(stock_data: Optional[StockData]):
+    usd_to_inr = get_usd_to_inr_rate()
+
     """Primary market snapshot with glassmorphism styling; falls back to provided sample when data is unavailable."""
     snapshot = {
         "price": 273.40,
@@ -460,10 +476,10 @@ def render_market_pulse(stock_data: Optional[StockData]):
 
     if stock_data:
         snapshot = {
-            "price": stock_data.current_price,
+            "price": stock_data.current_price*usd_to_inr,
             "change_pct": stock_data.price_change_pct,
-            "high": max(stock_data.highs) if stock_data.highs else None,
-            "low": min(stock_data.lows) if stock_data.lows else None,
+            "high": max(stock_data.highs)*usd_to_inr if stock_data.highs else None,
+            "low": min(stock_data.lows)*usd_to_inr if stock_data.lows else None,
             "volume": stock_data.volumes[-1] if stock_data.volumes else None,
         }
 
