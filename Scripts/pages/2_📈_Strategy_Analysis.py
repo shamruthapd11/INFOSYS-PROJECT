@@ -1,10 +1,22 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- Strategy final
 import streamlit as st
 import sys
 import logging
 from pathlib import Path
 from typing import Optional
+import requests
 
+@st.cache_data(ttl=6 * 60 * 60)  # cache for 6 hours
+def get_usd_to_inr_rate():
+    try:
+        resp = requests.get(
+            "https://open.er-api.com/v6/latest/USD",
+            timeout=1.5
+        )
+        data = resp.json()
+        return float(data["rates"]["INR"])
+    except Exception:
+        return 83.0  # instant fallback
 # ======================================================
 # PATH & LOGGING
 # ======================================================
@@ -207,6 +219,14 @@ def main():
         # Display current loaded stock
         if SessionKeys.STOCK_DATA in st.session_state:
             stock_data = st.session_state[SessionKeys.STOCK_DATA]
+            usd_to_inr = get_usd_to_inr_rate()
+
+            price_inr = (
+                stock_data.current_price
+                if stock_data.symbol.endswith(".NS")
+                else stock_data.current_price * usd_to_inr
+            )
+
             if stock_data:
                 st.markdown("---")
                 st.markdown(f"""
@@ -218,7 +238,7 @@ def main():
                             {stock_data.symbol}
                         </div>
                         <div style="font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-top: 5px;">
-                            ₹{stock_data.current_price:.2f}
+                            ₹{price_inr:.2f}
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
